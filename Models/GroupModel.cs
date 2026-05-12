@@ -11,5 +11,6 @@ public class Group
     public int? UserId{get; set;} = null;
     [ForeignKey("UserId")]
     public User? Owner{get; set;} = null;
-    public List<GroupMember> Members = new();
+    [MinLength(1)]
+    public required int NoOfGroups {get;set;}
 }

@@ -47,7 +47,7 @@ if (app.Environment.IsDevelopment())
             <script>
                 // Automatically attach your JWT token to every request made from this page
                 // Just paste your token inside the quotes below!
-                const MY_JWT_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzIiwianRpIjoiZTRiYTY5MzEtZGZkYy00YjI3LWI3NmUtY2E3NzEwZDJhYjA0IiwibmJmIjoxNzc4NTcwOTYyLCJleHAiOjE3Nzg1NzgxNjIsImlhdCI6MTc3ODU3MDk2MiwiaXNzIjoiUHJhY3RpY2VXZWIiLCJhdWQiOiJQcmFjdGljZVdlYlVzZXJzIn0.aIxEqOOSnAh4qpt-mX0N-VwQGIShAafuyw3wNFtrqiQ';
+                const MY_JWT_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzIiwianRpIjoiY2E0OWIwODktMDJlOC00YTgyLWFiOTItNWJmZmVjZmNjODAxIiwibmJmIjoxNzc4NTg4MzM3LCJleHAiOjE3Nzg1OTU1MzcsImlhdCI6MTc3ODU4ODMzNywiaXNzIjoiUHJhY3RpY2VXZWIiLCJhdWQiOiJQcmFjdGljZVdlYlVzZXJzIn0.RBTQ92TaT1UCXvO6f7C8lOMUed85cnzNPPYeGej6V-4';
                 
                 if (MY_JWT_TOKEN && MY_JWT_TOKEN !== 'YOUR_JWT_TOKEN_HERE') {
                     const constantFetch = window.fetch;

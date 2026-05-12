@@ -6,6 +6,7 @@ namespace PracticeWeb.DTOs
         [Required] string Password
     );
     public record ChangePasswordCredentials(
+        [Required] string password,
         [Required] string NewPassword
     );
 }

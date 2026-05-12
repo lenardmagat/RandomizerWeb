@@ -2,6 +2,7 @@ using PracticeWeb.Interfaces;
 using PracticeWeb.DTOs;
 using PracticeWeb.Model;
 using PracticeWeb.Interface;
+using System.Security.Authentication;
 namespace PracticeWeb.Services;
 public class AccountServices : IAccountServices
 {  
@@ -28,6 +29,7 @@ public class AccountServices : IAccountServices
     public async Task UpdateAccount(int userUid, ChangePasswordCredentials dto)
     {
         User? user = await _repo.UserAsync(UserUID:userUid) ?? throw new InvalidOperationException("Wrong Password");
+        if(!_security.VerifyPassword(dto.password, user.HashedPassword)) throw new InvalidCredentialException("Wrong password.");
         user.HashedPassword = _security.HashPassword(dto.NewPassword);
         await _repo.SavechangesAsync();
         return;

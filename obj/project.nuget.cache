@@ -1,11 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "I8CSCbijeL0=",
+  "dgSpecHash": "iQmGTmIhGDY=",
   "success": true,
   "projectFilePath": "C:\\Users\\Marry Bless Magat\\PracticeWeb\\PracticeWeb.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Marry Bless Magat\\.nuget\\packages\\bcrypt.net-next\\4.1.0\\bcrypt.net-next.4.1.0.nupkg.sha512",
     "C:\\Users\\Marry Bless Magat\\.nuget\\packages\\dotnetenv\\3.2.0\\dotnetenv.3.2.0.nupkg.sha512",
+    "C:\\Users\\Marry Bless Magat\\.nuget\\packages\\hashids.net\\1.7.0\\hashids.net.1.7.0.nupkg.sha512",
     "C:\\Users\\Marry Bless Magat\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\Marry Bless Magat\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\10.0.7\\microsoft.aspnetcore.authentication.jwtbearer.10.0.7.nupkg.sha512",
     "C:\\Users\\Marry Bless Magat\\.nuget\\packages\\microsoft.build.framework\\18.0.2\\microsoft.build.framework.18.0.2.nupkg.sha512",
