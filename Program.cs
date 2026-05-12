@@ -32,7 +32,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 DotNetEnv.Env.Load();
-string? connectionString = Environment.GetEnvironmentVariable("DataBaseConnection");
+string? connectionString = builder.Configuration["DataBaseConnection"];
 if (string.IsNullOrEmpty(connectionString)) throw new InvalidOperationException("Data Base connection is missing");
 builder.Services.AddApplicationServices(connectionString); //connectionString
 var app = builder.Build();
