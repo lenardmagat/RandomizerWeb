@@ -6,14 +6,15 @@ namespace PracticeWeb.Interfaces
     {
         Task CreateAccount(AccountCredentials dto);
         Task<string?> Login(AccountCredentials dto);
+        Task UpdateAccount(int userUid, ChangePasswordCredentials dto);
         
     }
 
     public interface IAccountRepository
     {
         Task AddAsync(User data);
-
-        Task<User?>UserAsync(string name);
+        Task<User?>UserAsync(string? Name = null, int? UserUID = null);
         Task<bool> IsUserExisting(string name);
+        Task SavechangesAsync();
     }
 }

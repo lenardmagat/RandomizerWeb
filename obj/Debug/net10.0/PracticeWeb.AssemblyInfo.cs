@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PracticeWeb")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ed68f9139504b1ccff1da60422d8c7cebe2cb6a9")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e7f26d05204b9c2c538a3db497316c6035f748db")]
 [assembly: System.Reflection.AssemblyProductAttribute("PracticeWeb")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PracticeWeb")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

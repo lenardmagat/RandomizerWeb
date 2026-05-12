@@ -5,4 +5,7 @@ namespace PracticeWeb.DTOs
         [Required][StringLength(12, MinimumLength = 5)] string Name,
         [Required] string Password
     );
+    public record ChangePasswordCredentials(
+        [Required] string NewPassword
+    );
 }

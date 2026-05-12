@@ -15,12 +15,21 @@ public class AccountRepository : IAccountRepository
         await _db.SaveChangesAsync();
     }
 
-    public  async Task<User?> UserAsync(string name)
+    public  async Task<User?> UserAsync(string? name, int? UserUID)
     {
-        return  await _db.Users.FirstOrDefaultAsync(u => u.Name == name);
+        if(name is not null)
+            return  await _db.Users.FirstOrDefaultAsync(u => u.Name == name);
+        else if(UserUID.HasValue)
+            
+            return await _db.Users.FindAsync(UserUID);
+        throw new InvalidOperationException("Credential cannot be found.");
     }
     public async Task<bool> IsUserExisting(string name)
     {
         if(await _db.Users.FirstOrDefaultAsync(u => u.Name == name) is not null) return true; else return false;
+    }
+    public async Task SavechangesAsync()
+    {
+        await _db.SaveChangesAsync();
     }
 } 

@@ -28,4 +28,11 @@ public class AccountServices : IAccountServices
         string token = _security.CreateToken(user.UserId);
         return token;
     }
+    public async Task UpdateAccount(int userUid, ChangePasswordCredentials dto)
+    {
+        User? user = await _repo.UserAsync(UserUID:userUid) ?? throw new InvalidOperationException("Wrong Password");
+        user.HashedPassword = _security.HashPassword(dto.NewPassword);
+        await _repo.SavechangesAsync();
+        return;
+    }
 }   
