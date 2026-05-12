@@ -1,1 +1,21 @@
-.env
+# Log files
+*.log
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build outputs (The culprits!)
+bin/
+obj/
+
+# IDE files
+.vs/
+.vscode/
+.idea/
+
+# App settings files that might contain production secrets
+appsettings.Development.json
