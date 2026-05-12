@@ -2,8 +2,7 @@ using System.ComponentModel.DataAnnotations;
 namespace PracticeWeb.DTOs;
 
 public record MemberDto(
-    [Required] string Name,
-    int? UserUid = null
+    [Required] string Name
     
 );
 

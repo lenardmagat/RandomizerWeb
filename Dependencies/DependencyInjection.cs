@@ -17,6 +17,8 @@ namespace PracticeWeb.Configuration
         services.AddDbContext<DbManager>(options => options.UseNpgsql(connectionString)); //connectionString
         services.AddScoped<IAccountServices, AccountServices>();
         services.AddScoped<IAccountRepository, AccountRepository>();
+        services.AddScoped<IGroupRepository, GroupRepository>();
+        services.AddScoped<IGroupService, GroupServices>();
         services.AddSingleton<IHasher, Security>();
         return services;
     }

@@ -1,11 +1,8 @@
 using PracticeWeb.Interfaces;
 using PracticeWeb.DTOs;
-namespace PracticeWeb.Services;
 using PracticeWeb.Model;
-using PracticeWeb.Repository;
-using PracticeWeb.core;
 using PracticeWeb.Interface;
-
+namespace PracticeWeb.Services;
 public class AccountServices : IAccountServices
 {  
     private IAccountRepository _repo;
