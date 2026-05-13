@@ -13,7 +13,7 @@ namespace PracticeWeb.Configuration
 {
     public static class DependencyInjection
 {
-    public static IServiceCollection AddApplicationServices(this IServiceCollection services, string connectionString)//string connectionString
+    public static IServiceCollection AddApplicationServices(this IServiceCollection services, string connectionString, IConfiguration configuration)//string connectionString
     {
         DotNetEnv.Env.Load();
         services.AddDbContext<DbManager>(options => options.UseNpgsql(connectionString)); //connectionString
@@ -22,7 +22,7 @@ namespace PracticeWeb.Configuration
         services.AddScoped<IGroupRepository, GroupRepository>();
         services.AddScoped<IGroupService, GroupServices>();
         services.AddSingleton<IHasher, Security>();
-        services.AddSingleton<IHashids>(_ => new Hashids(Environment.GetEnvironmentVariable("GroupSecretKey"), 8));
+        services.AddSingleton<IHashids>(_ => new Hashids(configuration["GroupSecretKey"], 8));
         return services;
     }
 }
