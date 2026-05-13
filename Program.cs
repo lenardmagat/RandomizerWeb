@@ -2,6 +2,7 @@
 using System.Security.Authentication;
 using PracticeWeb.Configuration;
 using PracticeWeb.Middleware;
+using PracticeWeb.DataBase;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers(options => options.Filters.Add<GlobalExceptionFilter>());
 DotNetEnv.Env.Load();
@@ -65,4 +66,23 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<DbManager>(); // Use your actual DbContext class name here if different
+        
+        // This will automatically create the database and tables if they don't exist
+        context.Database.EnsureCreated(); 
+        
+        // ALTERNATIVELY, if you use EF migrations, uncomment the line below instead:
+        // context.Database.Migrate();
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while creating the database tables.");
+    }
+}
 app.Run();
