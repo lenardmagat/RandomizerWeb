@@ -65,6 +65,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 app.UseHttpsRedirection();
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 using (var scope = app.Services.CreateScope())
@@ -75,7 +76,7 @@ using (var scope = app.Services.CreateScope())
         var context = services.GetRequiredService<DbManager>(); // Use your actual DbContext class name here if different
         
         // This will automatically create the database and tables if they don't exist
-        context.Database.EnsureCreated(); 
+        context.Database.Migrate(); 
         
         // ALTERNATIVELY, if you use EF migrations, uncomment the line below instead:
         // context.Database.Migrate();
@@ -85,10 +86,5 @@ using (var scope = app.Services.CreateScope())
         var logger = services.GetRequiredService<ILogger<Program>>();
         logger.LogError(ex, "An error occurred while creating the database tables.");
     }
-}
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<DbManager>();
-    db.Database.Migrate(); // This applies migrations to the live DB automatically
 }
 app.Run();
