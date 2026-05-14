@@ -54,7 +54,7 @@ public class GroupRepository : IGroupRepository
     }
     public async Task<Result<List<Group>>> FindGroupsData(int UserUid)
     {
-        var GroupsData = await _db.Groups.Where(u => u.UserId == UserUid).ToListAsync();
+        var GroupsData = await _db.Groups.Where(u => u.UserId == UserUid).Include(g => g.Owner).ToListAsync();
         if(GroupsData is null) return Result<List<Group>>.Failure("Can't fetch data on given credentials", 404);
         return Result<List<Group>>.Success(GroupsData);
     }
