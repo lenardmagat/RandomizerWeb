@@ -42,19 +42,19 @@ public class GroupRepository : IGroupRepository
     }
     public async Task<Result<Group>> FindGroupasync(int GroupId)
     {
-        Group? group = await _db.Groups.Where(g => g.GroupId == GroupId).Include(g => g.Owner).FirstOrDefaultAsync();
+        Group? group = await _db.Groups.AsNoTracking().Where(g => g.GroupId == GroupId).Include(g => g.Owner).FirstOrDefaultAsync();
         if(group is null) return Result<Group>.Failure("Can't fetch data into given credentials", 405);
         return Result<Group>.Success(group);
     }
     public async Task<Result<List<GroupMember>>> FindMembersasync(int GroupId)
     {
-        List<GroupMember>? groupMembers = await _db.GroupMembers.Where(m => m.GroupId == GroupId).ToListAsync();
+        List<GroupMember>? groupMembers = await _db.GroupMembers.AsNoTracking().Where(m => m.GroupId == GroupId).ToListAsync();
         if(groupMembers is null) return Result<List<GroupMember>>.Failure("Can't fetch data into given credentials", 405); 
         return Result<List<GroupMember>>.Success(groupMembers);
     }
     public async Task<Result<List<Group>>> FindGroupsData(int UserUid)
     {
-        var GroupsData = await _db.Groups.Where(u => u.UserId == UserUid).Include(g => g.Owner).ToListAsync();
+        var GroupsData = await _db.Groups.AsNoTracking().Where(u => u.UserId == UserUid).Include(g => g.Owner).ToListAsync();
         if(GroupsData is null) return Result<List<Group>>.Failure("Can't fetch data on given credentials", 404);
         return Result<List<Group>>.Success(GroupsData);
     }

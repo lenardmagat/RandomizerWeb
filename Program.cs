@@ -3,6 +3,7 @@ using System.Security.Authentication;
 using PracticeWeb.Configuration;
 using PracticeWeb.Middleware;
 using PracticeWeb.DataBase;
+using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers(options => options.Filters.Add<GlobalExceptionFilter>());
 DotNetEnv.Env.Load();
@@ -84,5 +85,10 @@ using (var scope = app.Services.CreateScope())
         var logger = services.GetRequiredService<ILogger<Program>>();
         logger.LogError(ex, "An error occurred while creating the database tables.");
     }
+}
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<DbContext>();
+    db.Database.Migrate(); // This applies migrations to the live DB automatically
 }
 app.Run();
