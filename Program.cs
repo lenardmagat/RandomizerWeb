@@ -88,7 +88,7 @@ using (var scope = app.Services.CreateScope())
 }
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<DbContext>();
+    var db = scope.ServiceProvider.GetRequiredService<DbManager>();
     db.Database.Migrate(); // This applies migrations to the live DB automatically
 }
 app.Run();
