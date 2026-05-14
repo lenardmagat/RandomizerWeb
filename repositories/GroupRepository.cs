@@ -42,7 +42,7 @@ public class GroupRepository : IGroupRepository
     }
     public async Task<Result<Group>> FindGroupasync(int GroupId)
     {
-        Group? group = await _db.Groups.FindAsync(GroupId);
+        Group? group = await _db.Groups.Where(g => g.GroupId == GroupId).Include(g => g.Owner).FirstOrDefaultAsync();
         if(group is null) return Result<Group>.Failure("Can't fetch data into given credentials", 405);
         return Result<Group>.Success(group);
     }
