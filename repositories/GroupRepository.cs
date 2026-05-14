@@ -1,6 +1,8 @@
-using PracticeWeb.Interfaces;
+using PracticeWeb.ErrorHandling;
 using PracticeWeb.Model;
 namespace PracticeWeb.Repository;
+
+using System.Reflection.Metadata.Ecma335;
 
 using System.Security.Authentication;
 using Microsoft.EntityFrameworkCore;
@@ -11,37 +13,44 @@ public class GroupRepository : IGroupRepository
 {
     private readonly DbManager _db;
     public GroupRepository(DbManager db) => _db = db;
-    public async Task AddMemberAsync(List<Member> dto)
+    public async Task<Result> AddMemberAsync(List<Member> dto)
     {
         await _db.Members.AddRangeAsync(dto);
-        return;
+        return Result.Success();
     }
-    public async Task<List<Member>> GetMembersAsync(int UserUid)
+    public async Task<Result<List<Member>>> GetMembersAsync(int UserUid)
     {
-        List<Member> members = await _db.Members.Where(u => u.UserId == UserUid).OrderBy(u => u.Name).ToListAsync();
-        return members;
+        List<Member> members = await _db.Members
+                                    .Where(u => u.UserId == UserUid)
+                                    .OrderBy(u => u.Name)
+                                    .ToListAsync();
+        if(members is null) 
+            return Result<List<Member>>.Failure("No fetched data from given UserId", 405);
+        return Result<List<Member>>.Success(members);
     }
-    public async Task SaveChangesAsync()
+    public async Task<Result> SaveChangesAsync()
     {
         await _db.SaveChangesAsync();
+        return Result.Success();
     }
-    public async Task<int> SaveGroupAndMembers(Group group, List<GroupMember> groupMembers)
+    public async Task<Result<int>> SaveGroupAndMembers(Group group, List<GroupMember> groupMembers)
     {
         // await _db.Groups.AddAsync(group);
         await _db.GroupMembers.AddRangeAsync(groupMembers);
-        await _db.SaveChangesAsync();
-        return groupMembers[0].GroupId;
+        var SaveChangesresult = await _db.SaveChangesAsync();
+        return Result<int>.Success(groupMembers[0].GroupId);
     }
-    public async Task<Group> FindGroupasync(int GroupId)
+    public async Task<Result<Group>> FindGroupasync(int GroupId)
     {
-        Group? group = await _db.Groups.FindAsync(GroupId) ?? throw new InvalidCredentialException("Invalid Group Id.");
-        return group;
+        Group? group = await _db.Groups.FindAsync(GroupId);
+        if(group is null) return Result<Group>.Failure("Can't fetch data into given credentials", 405);
+        return Result<Group>.Success(group);
     }
-    public async Task<List<GroupMember>> FindMembersasync(int GroupId)
+    public async Task<Result<List<GroupMember>>> FindMembersasync(int GroupId)
     {
-        List<GroupMember>? groupMembers = await _db.GroupMembers.Where(m => m.GroupId == GroupId).ToListAsync()
-        ?? throw new InvalidCredentialException("Invalid Group Id.");
-        return groupMembers;
+        List<GroupMember>? groupMembers = await _db.GroupMembers.Where(m => m.GroupId == GroupId).ToListAsync();
+        if(groupMembers is null) return Result<List<GroupMember>>.Failure("Can't fetch data into given credentials", 405); 
+        return Result<List<GroupMember>>.Success(groupMembers);
     }
     public async Task<List<Group>> FindGroupsData(int UserUid)
     {

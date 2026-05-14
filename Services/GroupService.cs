@@ -47,7 +47,7 @@ public class GroupServices : IGroupService
         if(!resultAddMembers.IsSuccess || !resultSaveChanges.IsSuccess) return Result.Failure("Failed to add members", 205);
         return Result.Success();
     }
-    public async Task<GetGroupResponse> CreateGroup(int? Useruid, CreateGroupRequest dto)
+    public async Task<Result<GetGroupResponse>> CreateGroup(int? Useruid, CreateGroupRequest dto)
     {
         int? UserUid = null;
         if(Useruid.HasValue) UserUid = Useruid;
@@ -60,32 +60,38 @@ public class GroupServices : IGroupService
             index++;
             groupMembers.Add(new GroupMember{Name = member, Owner = group, GroupNumber = index});
         }
-        int Groupid = await _groupRepository.SaveGroupAndMembers(group, groupMembers);
-        var response = await GetGroupData(hashId: null,GroupId:Groupid);
+        var Groupid = await _groupRepository.SaveGroupAndMembers(group, groupMembers);
+        var response = await GetGroupData(hashId: null,GroupId:Groupid.Value);
+        if(!Groupid.IsSuccess || !response.IsSuccess) return Result<GetGroupResponse>.Failure("Can't process the data", 405);
         return response;
     }
-    public async Task<GetGroupResponse> GetGroupData(string? hashId, int? GroupId)
+    public async Task<Result<GetGroupResponse>> GetGroupData(string? hashId, int? GroupId)
     {
         int _GroupId;
         if(hashId != null) _GroupId = _Security.DecodeHashids(hashId);
         else if(GroupId.HasValue) _GroupId = GroupId.Value;
-        else throw new InvalidCastException("No parameters");
-        Group GroupData = await _groupRepository.FindGroupasync(_GroupId);
-        if(GroupData.Status != "Active") throw new InvalidCredentialException("Invalid Credential");
-        List<GroupMember> membersData = await _groupRepository.FindMembersasync(_GroupId);
+        else return Result<GetGroupResponse>.Failure("No given data to process", 404);
+        Result<Group> GroupData = await _groupRepository.FindGroupasync(_GroupId);
+        if(!GroupData.IsSuccess || GroupData.Value is null) 
+            return Result<GetGroupResponse>.Failure(GroupData.Error ?? "Invalid Credentials", 405);
+        if(GroupData.Value.Status != "Active")
+            return Result<GetGroupResponse>.Failure("Invalid Credential", 404);
+        Result<List<GroupMember>> membersData = await _groupRepository.FindMembersasync(_GroupId);
+        if(!membersData.IsSuccess || membersData.Value is null) 
+            return Result<GetGroupResponse>.Failure(membersData.Error ?? "Invalid Credentials", membersData.StatusCode);
         var members = new Dictionary<int, List<string>>();
-        foreach(var member in membersData)
+        foreach(var member in membersData.Value)
         {
             CollectionsMarshal.GetValueRefOrAddDefault(members, member.GroupId, out _) ??= new List<string>();
             members[member.GroupId].Add(member.Name);
         }
-        var response = new GetGroupResponse(HashedId:_Security.CreateHashids(GroupData.GroupId),
-                                            GroupName: GroupData.Name, 
-                                            Owner: GroupData.Owner?.Name ?? "Anonymous", 
-                                            NumberOfGroups: GroupData.NoOfGroups, 
+        var response = new GetGroupResponse(HashedId:_Security.CreateHashids(GroupData.Value.GroupId),
+                                            GroupName: GroupData.Value.Name, 
+                                            Owner: GroupData.Value.Owner?.Name ?? "Anonymous", 
+                                            NumberOfGroups: GroupData.Value.NoOfGroups, 
                                             Members:members
                                              ); 
-        return response;
+        return Result<GetGroupResponse>.Success(response);
     }
     public async Task<List<GetGroupsDataResponse>> GetGroupsData(int UserUid)
     {

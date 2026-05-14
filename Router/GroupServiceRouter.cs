@@ -33,15 +33,34 @@ public class GroupController : ControllerBase
     public async Task<IActionResult> CreateGroup([FromBody] CreateGroupRequest dto)
     {
         var UserUid = User.GetUserId();
-        GetGroupResponse response;
-        if(UserUid is not null)  response = await _GroupServices.CreateGroup(UserUid.Value, dto);
-        else  response =await _GroupServices.CreateGroup(Useruid: null, dto);
-        return Ok(response);
+        Result<GetGroupResponse> response;
+        if(UserUid is not null)  
+            response = await _GroupServices.CreateGroup(UserUid.Value, dto);
+        else  
+            response = await _GroupServices.CreateGroup(Useruid: null, dto);
+        if(!response.IsSuccess) return 
+        StatusCode(
+            response.StatusCode,
+            new {
+                error = response.Error,
+                timestamps = DateTime.UtcNow
+                }
+            );
+        return Ok(response.Value);
     }
     [HttpGet("{GroupId}")]
     public async Task<IActionResult> GetGroup(string GroupId)
     {
         var response = await _GroupServices.GetGroupData(hashId:GroupId, GroupId:null);
+        if(!response.IsSuccess) 
+            StatusCode(
+                response.StatusCode,
+                new
+                {
+                    erorr = response.Error,
+                    timestampt = DateTime.UtcNow
+                }
+            );
         return Ok(response);
     }
     [HttpGet("GrousData")]
