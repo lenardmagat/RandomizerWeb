@@ -10,7 +10,7 @@ namespace PracticeWeb.Interface
         Task<Result> AddMember(int UserUid, List<MemberDto> members);
         Task<Result<GetGroupResponse>> CreateGroup(int? Useruid, CreateGroupRequest dto);
         Task<Result<GetGroupResponse>> GetGroupData(string? hashId, int? GroupId);
-        Task<List<Result<GetGroupsDataResponse>>> GetGroupsData(int UserUid);
+        Task<Result<List<GetGroupsDataResponse>>> GetGroupsData(int UserUid);
     }
     public interface IGroupRepository
     {

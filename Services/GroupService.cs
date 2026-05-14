@@ -3,7 +3,6 @@ using PracticeWeb.DTOs;
 using PracticeWeb.Model;
 using PracticeWeb.Interface;
 using System.Runtime.InteropServices;
-using System.Security.Authentication;
 namespace PracticeWeb.Services;
 public class GroupServices : IGroupService
 {
@@ -93,18 +92,20 @@ public class GroupServices : IGroupService
                                              ); 
         return Result<GetGroupResponse>.Success(response);
     }
-    public async Task<List<GetGroupsDataResponse>> GetGroupsData(int UserUid)
+    public async Task<Result<List<GetGroupsDataResponse>>> GetGroupsData(int UserUid)
     {
-        List<Group>? groups = await _groupRepository.FindGroupsData(UserUid) ?? throw new Exception("No Data to Process");
+        Result<List<Group>> groups = await _groupRepository.FindGroupsData(UserUid);
+        if(!groups.IsSuccess || groups.Value is null)
+            return Result<List<GetGroupsDataResponse>>.Failure(groups.Error ?? "Invalid Credentials", groups.StatusCode);
         
         List<GetGroupsDataResponse> response = new();
-        foreach(var group in groups)
+        foreach(var group in groups.Value)
         {
             response.Add(new GetGroupsDataResponse(GroupName: group.Name, 
                                                     GroupHashedId: _Security.CreateHashids(group.GroupId),
                                                     NumberOfGroups: group.NoOfGroups));
         }
-        return response;
+        return Result<List<GetGroupsDataResponse>>.Success(response);
     }
 
 }

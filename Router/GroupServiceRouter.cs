@@ -61,15 +61,24 @@ public class GroupController : ControllerBase
                     timestampt = DateTime.UtcNow
                 }
             );
-        return Ok(response);
+        return Ok(response.Value);
     }
-    [HttpGet("GrousData")]
+    [HttpGet("GroupData")]
     [Authorize]
     public async Task<IActionResult> GetUserGroupsData()
     {
         var UserUid = User.GetUserId();
         if(!UserUid.HasValue) return Unauthorized();
-        List<GetGroupsDataResponse> response = await _GroupServices.GetGroupsData(UserUid.Value);
-        return Ok(response);
+        Result<List<GetGroupsDataResponse>> response = await _GroupServices.GetGroupsData(UserUid.Value);
+        if(!response.IsSuccess)
+            return StatusCode(
+                response.StatusCode,
+                new
+                {
+                    error = response.Error,
+                    timestamp = DateTime.UtcNow
+                }
+            );
+        return Ok(response.Value);
     }
 }   

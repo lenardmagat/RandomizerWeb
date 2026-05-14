@@ -52,8 +52,10 @@ public class GroupRepository : IGroupRepository
         if(groupMembers is null) return Result<List<GroupMember>>.Failure("Can't fetch data into given credentials", 405); 
         return Result<List<GroupMember>>.Success(groupMembers);
     }
-    public async Task<List<Group>> FindGroupsData(int UserUid)
+    public async Task<Result<List<Group>>> FindGroupsData(int UserUid)
     {
-        return await _db.Groups.Where(u => u.UserId == UserUid).ToListAsync();
+        var GroupsData = await _db.Groups.Where(u => u.UserId == UserUid).ToListAsync();
+        if(GroupsData is null) return Result<List<Group>>.Failure("Can't fetch data on given credentials", 404);
+        return Result<List<Group>>.Success(GroupsData);
     }
 }
