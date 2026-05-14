@@ -86,12 +86,13 @@ public class GroupServices : IGroupService
             CollectionsMarshal.GetValueRefOrAddDefault(members, member.GroupNumber, out _) ??= new List<string>();
             members[member.GroupNumber].Add(member.Name);
         }
+        foreach(var groupmember in members.Values) groupmember.Sort();
         var response = new GetGroupResponse(HashedId:_Security.CreateHashids(GroupData.Value.GroupId),
                                             GroupName: GroupData.Value.Name, 
                                             Owner: GroupData.Value.Owner?.Name ?? "Anonymous", 
                                             NumberOfGroups: GroupData.Value.NoOfGroups, 
                                             Members:members
-                                             ); 
+                                            ); 
         return Result<GetGroupResponse>.Success(response);
     }
     public async Task<Result<List<GetGroupsDataResponse>>> GetGroupsData(int UserUid)
