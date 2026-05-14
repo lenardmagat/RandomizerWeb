@@ -81,7 +81,7 @@ public class GroupServices : IGroupService
         var members = new Dictionary<int, List<string>>();
         foreach(var member in membersData.Value)
         {
-            CollectionsMarshal.GetValueRefOrAddDefault(members, member.GroupId, out _) ??= new List<string>();
+            CollectionsMarshal.GetValueRefOrAddDefault(members, member.GroupNumber, out _) ??= new List<string>();
             members[member.GroupNumber].Add(member.Name);
         }
         var response = new GetGroupResponse(HashedId:_Security.CreateHashids(GroupData.Value.GroupId),
