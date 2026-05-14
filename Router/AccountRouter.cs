@@ -3,6 +3,8 @@ using PracticeWeb.DTOs;
 using PracticeWeb.Interfaces;
 using PracticeWeb.Extensions;
 using Microsoft.AspNetCore.Authorization;
+using PracticeWeb.ErrorHandling;
+using PracticeWeb.Model;
 namespace PracticeWeb.Router;
 [ApiController]
 [Route("API/[controller]")]
@@ -14,13 +16,31 @@ public class AccountController : ControllerBase
     [HttpPost("Create")]
     public async Task<IActionResult> CreateEndpoint(AccountCredentials dto)
     {
-        await _AccountService.CreateAccount(dto);
+        Result result= await _AccountService.CreateAccount(dto);
+        if (!result.IsSuccess)
+        {
+            return StatusCode(result.StatusCode, new
+            {
+                error = result.Error,
+                timestamp = DateTime.UtcNow
+                }
+                );
+        }
         return Ok("");
     }
     [HttpPost("Login")]
     public async Task<IActionResult> LoginEndpoint(AccountCredentials dto)
     {
-        var user = await _AccountService.Login(dto);
+        Result<string?> user = await _AccountService.Login(dto);
+        if (!user.IsSuccess)
+        {
+            return StatusCode(user.StatusCode, new
+            {
+                error = user.Error,
+                timestamp = DateTime.UtcNow
+            }
+                );
+        }
         return Ok(user);
     }
     [HttpPatch("Update-Profile")]
@@ -29,7 +49,14 @@ public class AccountController : ControllerBase
     {
         int? UserUid = User.GetUserId();
         if(!UserUid.HasValue) return Unauthorized();
-        await _AccountService.UpdateAccount(UserUid.Value, dto);
+        Result result = await _AccountService.UpdateAccount(UserUid.Value, dto);
+        if(!result.IsSuccess)
+            return StatusCode(result.StatusCode, new
+            {
+                error = result.Error,
+                timestamp = DateTime.UtcNow
+            }
+                );
         return Ok("Success changing password.");
     }
 

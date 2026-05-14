@@ -3,6 +3,7 @@ using PracticeWeb.DTOs;
 using PracticeWeb.Model;
 using PracticeWeb.Interface;
 using System.Security.Authentication;
+using PracticeWeb.ErrorHandling;
 namespace PracticeWeb.Services;
 public class AccountServices : IAccountServices
 {  
@@ -12,26 +13,31 @@ public class AccountServices : IAccountServices
         _repo = repo;
         _security = security;
     }
-    public async Task CreateAccount(AccountCredentials dto)
+    public async Task<Result> CreateAccount(AccountCredentials dto)
     {
-        if(await _repo.IsUserExisting(dto.Name)) throw new InvalidOperationException("Username already exist.");
+        if(await _repo.IsUserExisting(dto.Name)) Result.Failure("Username already Exist.", 205);
         User newUser = new User {Name = dto.Name, HashedPassword = _security.HashPassword(dto.Password), status = "Active"};
         await _repo.AddAsync(newUser);
+        return Result.Success(201);
     }
-    public async Task<string?> Login(AccountCredentials dto)
+    public async Task<Result<string?>> Login(AccountCredentials dto)
     {
-        User? user = await _repo.UserAsync(dto.Name);
-        if(user is null) throw new InvalidOperationException("Username is not existing.");
-        if(!_security.VerifyPassword(dto.Password, user.HashedPassword)) throw new InvalidOperationException("Wrong Password");
-        string token = _security.CreateToken(user.UserId);
-        return token;
+        Result<User?> user = await _repo.UserAsync(dto.Name);
+        if(user.StatusCode == 404 || user.Value is null) 
+            return Result<string?>.Failure(user.Error ?? "Can't found given credentials.", 404);
+        if(!_security.VerifyPassword(dto.Password, user.Value.HashedPassword)) 
+            return Result<string?>.Failure("Wrong password.", 401);
+        string token = _security.CreateToken(user.Value.UserId);
+        return Result<string?>.Success(token);
     }
-    public async Task UpdateAccount(int userUid, ChangePasswordCredentials dto)
+    public async Task<Result> UpdateAccount(int userUid, ChangePasswordCredentials dto)
     {
-        User? user = await _repo.UserAsync(UserUID:userUid) ?? throw new InvalidOperationException("Wrong Password");
-        if(!_security.VerifyPassword(dto.password, user.HashedPassword)) throw new InvalidCredentialException("Wrong password.");
-        user.HashedPassword = _security.HashPassword(dto.NewPassword);
+        Result<User?> user = await _repo.UserAsync(UserUID:userUid);
+        if(!user.IsSuccess ||  user.Value is null)
+            return Result.Failure("Can't found given credentials", 404);
+        if(!_security.VerifyPassword(dto.password, user.Value.HashedPassword)) throw new InvalidCredentialException("Wrong password.");
+        user.Value.HashedPassword = _security.HashPassword(dto.NewPassword);
         await _repo.SavechangesAsync();
-        return;
+        return Result.Success();
     }
 }   
