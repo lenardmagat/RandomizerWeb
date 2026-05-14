@@ -51,9 +51,11 @@ public class GroupServices : IGroupService
         int? UserUid = null;
         if(Useruid.HasValue) UserUid = Useruid;
         Group group = new Group{Name = dto.GroupName, Status = "Active", UserId = UserUid, NoOfGroups = dto.NumberOfGroups};
-        int index =0;
+        var members = dto.Members.ToList();
+        Random.Shared.Shuffle(CollectionsMarshal.AsSpan(members));
+        int index = 0;
         List<GroupMember> groupMembers = new();
-        foreach(var member in dto.Members)
+        foreach(var member in members)
         {
             if(index == dto.NumberOfGroups) index = 0;
             index++;
