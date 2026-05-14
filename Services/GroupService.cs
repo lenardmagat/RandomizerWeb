@@ -1,10 +1,9 @@
-using PracticeWeb.Interfaces;
+using PracticeWeb.ErrorHandling;
 using PracticeWeb.DTOs;
 using PracticeWeb.Model;
 using PracticeWeb.Interface;
 using System.Runtime.InteropServices;
 using System.Security.Authentication;
-using System.Reflection.Metadata.Ecma335;
 namespace PracticeWeb.Services;
 public class GroupServices : IGroupService
 {
@@ -20,19 +19,22 @@ public class GroupServices : IGroupService
     {
         
     }
-    public async Task AddMember(int UserUid, List<MemberDto> members)
+    public async Task<Result> AddMember(int UserUid, List<MemberDto> members)
     {
-        List<Member> ExistingMembers = await _groupRepository.GetMembersAsync(UserUid);
+        Result<List<Member>> ExistingMembers = await _groupRepository.GetMembersAsync(UserUid);
+        if(!ExistingMembers.IsSuccess || ExistingMembers.Value is null) return Result.Failure(ExistingMembers.Error 
+                                                                        ?? "Cannot fetch data from given credentials",
+                                                                        ExistingMembers.StatusCode);
         List<Member> newMembers = new();
         var IncomingMembers = members.Select(u => u.Name).ToHashSet();
-        foreach(var existingMember in ExistingMembers)
+        foreach(var existingMember in ExistingMembers.Value)
         {
             if (!IncomingMembers.Contains(existingMember.Name))
             {
                 existingMember.Status = "Inactive";
             }
         }
-        var ExistingNames = ExistingMembers.Select(u => u.Name).ToHashSet();
+        var ExistingNames = ExistingMembers.Value.Select(u => u.Name).ToHashSet();
         foreach(var dto in members)
         {
             if (!ExistingNames.Contains(dto.Name))
@@ -40,9 +42,10 @@ public class GroupServices : IGroupService
                 newMembers.Add(new Member{Name = dto.Name, UserId = UserUid, Status = "Active"});
             }
         }
-        await _groupRepository.AddMemberAsync(newMembers);
-        await _groupRepository.SaveChangesAsync();
-        return;
+        var resultAddMembers = await _groupRepository.AddMemberAsync(newMembers);
+        var resultSaveChanges = await _groupRepository.SaveChangesAsync();
+        if(!resultAddMembers.IsSuccess || !resultSaveChanges.IsSuccess) return Result.Failure("Failed to add members", 205);
+        return Result.Success();
     }
     public async Task<GetGroupResponse> CreateGroup(int? Useruid, CreateGroupRequest dto)
     {

@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using PracticeWeb.DTOs;
-using PracticeWeb.Interfaces;
+using PracticeWeb.ErrorHandling;
 using PracticeWeb.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using PracticeWeb.Interface;
@@ -18,7 +18,14 @@ public class GroupController : ControllerBase
     {
         var UserUid = User.GetUserId();
         if(!UserUid.HasValue) return Unauthorized();
-        await _GroupServices.AddMember(UserUid.Value, dto);
+        var result= await _GroupServices.AddMember(UserUid.Value, dto);
+        if(!result.IsSuccess)
+            return StatusCode(result.StatusCode, new
+            {
+                error = result.Error,
+                timestamps = DateTime.UtcNow
+            }
+            );
         return Ok("Success!");
     }
     [HttpPost("Create")]
