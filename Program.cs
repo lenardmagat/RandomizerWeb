@@ -10,7 +10,7 @@ Log.Logger = new LoggerConfiguration()
             .CreateLogger();
 builder.Services.AddControllers(options => options.Filters.Add<GlobalExceptionFilter>());
 builder.Host.UseSerilog();
-var connection = builder.Configuration["JWT_KEY]"] ?? throw new InvalidCredentialException("JWT Key is missing.");
+var connection = builder.Configuration["JWT_KEY"] ?? throw new InvalidCredentialException("JWT Key is missing.");
 builder.Services.AddAuthentication(options =>
 {
     // These default schemes tell ASP.NET Core to look for a JWT token by default
