@@ -32,7 +32,6 @@ builder.Services.AddAuthentication(options =>
             System.Text.Encoding.UTF8.GetBytes(connection)) 
     };
 });
-builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 DotNetEnv.Env.Load();
@@ -66,7 +65,7 @@ if (app.Environment.IsDevelopment())
         ";
     });
 }
-app.UseExceptionHandler();
+// app.UseExceptionHandler();
 app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
 app.UseAuthentication();
