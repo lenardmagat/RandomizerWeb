@@ -3,13 +3,12 @@ namespace PracticeWeb.DTOs;
 
 public record MemberDto(
     [Required] string Name
-    
 );
 
 public record CreateGroupRequest(
     [Required][StringLength(12, MinimumLength =5)] string GroupName,
-    [Required][MinLength(1, ErrorMessage = "Atleast one member is required")]List<string> Members,
-    [Required] int NumberOfGroups
+    [Required][MinLength(1, ErrorMessage = "At least one member is required")]List<string> Members,
+    [Required][MinLength(1, ErrorMessage = "At least 1 group needed")] int NumberOfGroups
 );
 public record GetGroupResponse(
     [Required] string HashedId,
