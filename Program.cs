@@ -1,44 +1,9 @@
-﻿using System.Security.Authentication;
-using PracticeWeb.Configuration;
-using PracticeWeb.Middleware;
-using PracticeWeb.DataBase;
+﻿using PracticeWeb.DataBase;
+using configuration;
 using Microsoft.EntityFrameworkCore;
-using Serilog;        
-var builder = WebApplication.CreateBuilder(args);
-Log.Logger = new LoggerConfiguration()
-            .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
-            .CreateLogger();
-builder.Services.AddControllers(options => options.Filters.Add<GlobalExceptionFilter>());
-builder.Host.UseSerilog();
-var connection = builder.Configuration["JWT_KEY"] ?? throw new InvalidCredentialException("JWT Key is missing.");
-builder.Services.AddAuthentication(options =>
-{
-    // These default schemes tell ASP.NET Core to look for a JWT token by default
-    options.DefaultAuthenticateScheme = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-    {  
-    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
-    {
+using Serilog;
+var app = Configurations.webApplication();
 
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["JWT_ISSUER"],    
-        ValidAudience = builder.Configuration["JWT_AUDIENCE"], 
-        IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(
-            System.Text.Encoding.UTF8.GetBytes(connection)) 
-    };
-});
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-DotNetEnv.Env.Load();
-string? connectionString = builder.Configuration["DataBaseConnection"];
-if (string.IsNullOrEmpty(connectionString)) throw new InvalidOperationException("Data Base connection is missing");
-builder.Services.AddApplicationServices(connectionString, builder.Configuration);
-var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -65,7 +30,6 @@ if (app.Environment.IsDevelopment())
         ";
     });
 }
-// app.UseExceptionHandler();
 app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
 app.UseAuthentication();
@@ -76,13 +40,8 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     try
     {
-        var context = services.GetRequiredService<DbManager>(); // Use your actual DbContext class name here if different
-        
-        // This will automatically create the database and tables if they don't exist
+        var context = services.GetRequiredService<DbManager>();
         context.Database.Migrate(); 
-        
-        // ALTERNATIVELY, if you use EF migrations, uncomment the line below instead:
-        // context.Database.Migrate();
     }
     catch (Exception ex)
     {
