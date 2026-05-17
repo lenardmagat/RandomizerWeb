@@ -6,8 +6,8 @@ using PracticeWeb.Services;
 using PracticeWeb.DataBase;
 using PracticeWeb.Interface;
 using PracticeWeb.core;
-using Npgsql;
 using HashidsNet;
+using Microsoft.IdentityModel.Protocols.Configuration;
 
 namespace PracticeWeb.Configuration
 {
@@ -15,14 +15,21 @@ namespace PracticeWeb.Configuration
 {
     public static IServiceCollection AddApplicationServices(this IServiceCollection services, string connectionString, IConfiguration configuration)//string connectionString
     {
-        DotNetEnv.Env.Load();
         services.AddDbContext<DbManager>(options => options.UseNpgsql(connectionString)); //connectionString
         services.AddScoped<IAccountServices, AccountServices>();
         services.AddScoped<IAccountRepository, AccountRepository>();
         services.AddScoped<IGroupRepository, GroupRepository>();
         services.AddScoped<IGroupService, GroupServices>();
-        services.AddSingleton<IHasher, Security>();
         services.AddSingleton<IHashids>(_ => new Hashids(configuration["GroupSecretKey"], 8));
+        services.AddSingleton<IHasher>(sp =>
+        {   var hashids = sp.GetRequiredService<IHashids>();
+            string? keystring = configuration[""] ?? throw new InvalidConfigurationException("JWT key string is missing.");
+            string? issuer = configuration[""] ?? throw new InvalidConfigurationException("Issuer key string is missing.");
+            string? audience = configuration[""] ?? throw new InvalidConfigurationException("Audience key string is missing.");
+            return new Security(hashids, keystring, issuer, audience);      
+        }
+        );
+        
         return services;
     }
 }

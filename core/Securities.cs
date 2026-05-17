@@ -1,5 +1,3 @@
-using BCrypt.Net;
-using Microsoft.AspNetCore.Identity;
 using PracticeWeb.Interface;
 using BCryptTool = BCrypt.Net.BCrypt;
 using System.Text;
@@ -7,14 +5,22 @@ using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
 using HashidsNet;
-using Microsoft.AspNetCore.Mvc;
 using System.Security.Authentication;
 namespace PracticeWeb.core
 {
     public class Security : IHasher
     {
         private readonly IHashids _hashids;
-        public Security(IHashids hashids) => _hashids = hashids;
+        private readonly string __JWTKeyString;
+        private readonly string __IssuerKeyString;
+        private readonly string __AudienceKeyString;
+        public Security(IHashids hashids, string keyString, string issuer, string audience)
+        {
+            _hashids = hashids;
+            __JWTKeyString = keyString;
+            __IssuerKeyString = issuer;
+            __AudienceKeyString = audience;
+        }
     public string HashPassword(string password)
         => BCryptTool.HashPassword(password, workFactor: 12);
     public bool VerifyPassword(string password, string hashPassword)
@@ -23,9 +29,7 @@ namespace PracticeWeb.core
     public string CreateToken(int Userid)
         {
             DotNetEnv.Env.Load();
-            var keyString = Environment.GetEnvironmentVariable("JWT_KEY")
-                ?? throw new InvalidOperationException("JWT Secret Key is missing in .env");
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(keyString));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(__JWTKeyString));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
             var claims = new[]
             {
@@ -37,8 +41,8 @@ namespace PracticeWeb.core
                 Subject = new ClaimsIdentity(claims),
                 Expires = DateTime.UtcNow.AddHours(2), // Ticket lasts 2 hours
                 SigningCredentials = creds,
-                Issuer = Environment.GetEnvironmentVariable("JWT_ISSUER"),
-                Audience = Environment.GetEnvironmentVariable("JWT_AUDIENCE")
+                Issuer = __IssuerKeyString,
+                Audience = __AudienceKeyString
             };
             var tokenHandler = new JwtSecurityTokenHandler();
             var token = tokenHandler.CreateToken(tokenDescriptor);
