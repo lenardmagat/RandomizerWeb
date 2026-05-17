@@ -23,9 +23,9 @@ namespace PracticeWeb.Configuration
         services.AddSingleton<IHashids>(_ => new Hashids(configuration["GroupSecretKey"], 8));
         services.AddSingleton<IHasher>(sp =>
         {   var hashids = sp.GetRequiredService<IHashids>();
-            string? keystring = configuration[""] ?? throw new InvalidConfigurationException("JWT key string is missing.");
-            string? issuer = configuration[""] ?? throw new InvalidConfigurationException("Issuer key string is missing.");
-            string? audience = configuration[""] ?? throw new InvalidConfigurationException("Audience key string is missing.");
+            string? keystring = configuration["JWT_KEY"] ?? throw new InvalidConfigurationException("JWT key string is missing.");
+            string? issuer = configuration["JWT_ISSUER"] ?? throw new InvalidConfigurationException("Issuer key string is missing.");
+            string? audience = configuration["JWT_AUDIENCE"] ?? throw new InvalidConfigurationException("Audience key string is missing.");
             return new Security(hashids, keystring, issuer, audience);      
         }
         );
