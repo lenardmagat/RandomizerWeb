@@ -15,7 +15,7 @@ public class AccountServices : IAccountServices
     }
     public async Task<Result> CreateAccount(AccountCredentials dto)
     {
-        if(await _repo.IsUserExisting(dto.Name)) Result.Failure("Username already Exist.", 205);
+        if(await _repo.IsUserExisting(dto.Name)) return Result.Failure("Username already Exist.", 205);
         User newUser = new User {Name = dto.Name, HashedPassword = _security.HashPassword(dto.Password), status = "Active"};
         await _repo.AddAsync(newUser);
         return Result.Success(201);

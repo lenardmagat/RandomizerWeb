@@ -4,8 +4,7 @@ using PracticeWeb.Interfaces;
 using PracticeWeb.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using PracticeWeb.ErrorHandling;
-using PracticeWeb.Model;
-namespace PracticeWeb.Router;
+namespace PracticeWeb.Routers;
 [ApiController]
 [Route("API/[controller]")]
 public class AccountController : ControllerBase

@@ -8,13 +8,13 @@ using HashidsNet;
 using System.Security.Authentication;
 namespace PracticeWeb.core
 {
-    public class Security : IHasher
+    public class SystemSecurity : IHasher
     {
         private readonly IHashids _hashids;
         private readonly string __JWTKeyString;
         private readonly string __IssuerKeyString;
         private readonly string __AudienceKeyString;
-        public Security(IHashids hashids, string keyString, string issuer, string audience)
+        public SystemSecurity(IHashids hashids, string keyString, string issuer, string audience)
         {
             _hashids = hashids;
             __JWTKeyString = keyString;

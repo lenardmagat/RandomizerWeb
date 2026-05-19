@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using PracticeWeb.DTOs;
 using System.Net;
-namespace PracticeWeb.Middleware
+namespace PracticeWeb.GlobalException
 {
     public class GlobalExceptionFilter : IExceptionFilter
     {

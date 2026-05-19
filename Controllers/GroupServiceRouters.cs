@@ -4,7 +4,7 @@ using PracticeWeb.ErrorHandling;
 using PracticeWeb.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using PracticeWeb.Interface;
-namespace PracticeWeb.Router;
+namespace PracticeWeb.Routers;
 [ApiController]
 [Route("API/[controller]")]
 public class GroupController : ControllerBase

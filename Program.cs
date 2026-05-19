@@ -1,5 +1,5 @@
 ﻿using PracticeWeb.DataBase;
-using configuration;
+using PracticeWeb.configuration;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 var app = Configurations.webApplication();

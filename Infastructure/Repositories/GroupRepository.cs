@@ -1,14 +1,9 @@
 using PracticeWeb.ErrorHandling;
 using PracticeWeb.Model;
 namespace PracticeWeb.Repository;
-
-using System.Reflection.Metadata.Ecma335;
-
-using System.Security.Authentication;
 using Microsoft.EntityFrameworkCore;
 using PracticeWeb.DataBase;
 using PracticeWeb.Interface;
-
 public class GroupRepository : IGroupRepository
 {
     private readonly DbManager _db;

@@ -1,8 +1,8 @@
 using System.Security.Authentication;
-using PracticeWeb.Configuration;
-using PracticeWeb.Middleware;
+using PracticeWeb.Injection;
+using PracticeWeb.GlobalException;
 using Serilog;   
-namespace configuration
+namespace PracticeWeb.configuration
 {
     class Configurations
     {

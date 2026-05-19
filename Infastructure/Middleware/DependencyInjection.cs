@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using PracticeWeb.Interfaces;
 using PracticeWeb.Repository;
 using PracticeWeb.Services;
@@ -9,7 +8,7 @@ using PracticeWeb.core;
 using HashidsNet;
 using Microsoft.IdentityModel.Protocols.Configuration;
 
-namespace PracticeWeb.Configuration
+namespace PracticeWeb.Injection
 {
     public static class DependencyInjection
 {
@@ -26,7 +25,7 @@ namespace PracticeWeb.Configuration
             string? keystring = configuration["JWT_KEY"] ?? throw new InvalidConfigurationException("JWT key string is missing.");
             string? issuer = configuration["JWT_ISSUER"] ?? throw new InvalidConfigurationException("Issuer key string is missing.");
             string? audience = configuration["JWT_AUDIENCE"] ?? throw new InvalidConfigurationException("Audience key string is missing.");
-            return new Security(hashids, keystring, issuer, audience);      
+            return new SystemSecurity(hashids, keystring, issuer, audience);      
         }
         );
         
