@@ -53,7 +53,7 @@ public class GroupController : ControllerBase
     {
         var response = await _GroupServices.GetGroupData(hashId:GroupId, GroupId:null);
         if(!response.IsSuccess) 
-            StatusCode(
+            return StatusCode(
                 response.StatusCode,
                 new
                 {
