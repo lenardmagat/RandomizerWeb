@@ -55,17 +55,23 @@ namespace PracticeWeb.core
         }
     public Result<int> DecodeHashids(string hash)
         {
-            if(string.IsNullOrWhiteSpace(hash)) return Result<int>.Failure("Provided ID is empty.", 406);
-            try{
-                int[] DecodedArray = _hashids.Decode(hash);
-                if (DecodedArray.Length == 0) Result<int>.Failure("Invalid Id", 404);
-                int GroupId = DecodedArray[0];
-                return Result<int>.Success(GroupId);
-                }
-            catch (Exception)
-            {
-                return Result<int>.Failure("Failed to decode ID. Malformed payload", 401);
-            }
+            if(string.IsNullOrWhiteSpace(hash)) 
+                return Result<int>.Failure("Provided ID is empty.", 406);
+
+            if(!_hashids.TryDecodeSingle(hash, out int decoded) || decoded == 0) 
+                return Result<int>.Failure("Invalid Id or Corrupted Id format", 403);
+            return Result<int>.Success(decoded);
+            // try{
+            //     int[] DecodedArray = _hashids.Decode(hash);
+            //     if (DecodedArray.Length == 0) return Result<int>.Failure("Invalid Id", 404);
+            //     int GroupId = DecodedArray[0];
+            //     return Result<int>.Success(GroupId);
+            //     }
+            // catch (Exception)
+            // {
+            //     return Result<int>.Failure("Failed to decode ID. Malformed payload", 401);
         }
+        
     }
 }
+
