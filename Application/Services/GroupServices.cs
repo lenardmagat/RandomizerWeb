@@ -21,9 +21,10 @@ public class GroupServices : IGroupService
     public async Task<Result> AddMember(int UserUid, List<MemberDto> members)
     {
         Result<List<Member>> ExistingMembers = await _groupRepository.GetMembersAsync(UserUid);
-        if(!ExistingMembers.IsSuccess || ExistingMembers.Value is null) return Result.Failure(ExistingMembers.Error 
-                                                                        ?? "Cannot fetch data from given credentials",
-                                                                        ExistingMembers.StatusCode);
+        if(!ExistingMembers.IsSuccess || ExistingMembers.Value is null) 
+            return Result.Failure(ExistingMembers.Error 
+                    ?? "Cannot fetch data from given credentials",
+                    ExistingMembers.StatusCode);
         List<Member> newMembers = new();
         var IncomingMembers = members.Select(u => u.Name).ToHashSet();
         foreach(var existingMember in ExistingMembers.Value)
@@ -69,7 +70,7 @@ public class GroupServices : IGroupService
     public async Task<Result<GetGroupResponse>> GetGroupData(string? hashId, int? GroupId)
     {
         int _GroupId;
-        if(hashId != null) _GroupId = _Security.DecodeHashids(hashId);
+        if(hashId != null) _GroupId = await Task.Run(() => _Security.DecodeHashids(hashId));
         else if(GroupId.HasValue) _GroupId = GroupId.Value;
         else return Result<GetGroupResponse>.Failure("No given data to process", 404);
         Result<Group> GroupData = await _groupRepository.FindGroupasync(_GroupId);
@@ -87,12 +88,13 @@ public class GroupServices : IGroupService
             members[member.GroupNumber].Add(member.Name);
         }
         foreach(var groupmember in members.Values) groupmember.Sort();
-        var response = new GetGroupResponse(HashedId:_Security.CreateHashids(GroupData.Value.GroupId),
-                                            GroupName: GroupData.Value.Name, 
-                                            Owner: GroupData.Value.Owner?.Name ?? "Anonymous", 
-                                            NumberOfGroups: GroupData.Value.NoOfGroups, 
-                                            Members:members
-                                            ); 
+        var response = new GetGroupResponse(
+            HashedId:await Task.Run(() => _Security.CreateHashids(GroupData.Value.GroupId)),
+            GroupName: GroupData.Value.Name, 
+            Owner: GroupData.Value.Owner?.Name ?? "Anonymous", 
+            NumberOfGroups: GroupData.Value.NoOfGroups, 
+            Members:members
+            ); 
         return Result<GetGroupResponse>.Success(response);
     }
     public async Task<Result<List<GetGroupsDataResponse>>> GetGroupsData(int UserUid)
@@ -104,9 +106,11 @@ public class GroupServices : IGroupService
         List<GetGroupsDataResponse> response = new();
         foreach(var group in groups.Value)
         {
-            response.Add(new GetGroupsDataResponse(GroupName: group.Name, 
-                                                    GroupHashedId: _Security.CreateHashids(group.GroupId),
-                                                    NumberOfGroups: group.NoOfGroups));
+            response.Add(new GetGroupsDataResponse(
+                GroupName: group.Name, 
+                GroupHashedId: await Task.Run(() => _Security.CreateHashids(group.GroupId)),
+                NumberOfGroups: group.NoOfGroups)
+                );
         }
         return Result<List<GetGroupsDataResponse>>.Success(response);
     }

@@ -25,7 +25,7 @@ public class AccountController : ControllerBase
                 }
                 );
         }
-        return Ok("");
+        return Ok(result);
     }
     [HttpPost("Login")]
     public async Task<IActionResult> LoginEndpoint(AccountCredentials dto)
@@ -56,7 +56,7 @@ public class AccountController : ControllerBase
                 timestamp = DateTime.UtcNow
             }
                 );
-        return Ok("Success changing password.");
+        return Ok(result);
     }
 
 }

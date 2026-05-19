@@ -16,7 +16,8 @@ public class AccountServices : IAccountServices
     public async Task<Result> CreateAccount(AccountCredentials dto)
     {
         if(await _repo.IsUserExisting(dto.Name)) return Result.Failure("Username already Exist.", 205);
-        User newUser = new User {Name = dto.Name, HashedPassword = _security.HashPassword(dto.Password), status = "Active"};
+        string hashedPassword = await Task.Run(()=> _security.HashPassword(dto.Password)); 
+        User newUser = new User {Name = dto.Name, HashedPassword = hashedPassword, status = "Active"};
         await _repo.AddAsync(newUser);
         return Result.Success(201);
     }
@@ -25,9 +26,9 @@ public class AccountServices : IAccountServices
         Result<User?> user = await _repo.UserAsync(dto.Name);
         if(user.StatusCode == 404 || user.Value is null) 
             return Result<string?>.Failure(user.Error ?? "Can't found given credentials.", 404);
-        if(!_security.VerifyPassword(dto.Password, user.Value.HashedPassword)) 
+        if(await Task.Run(() => !_security.VerifyPassword(dto.Password, user.Value.HashedPassword))) 
             return Result<string?>.Failure("Wrong password.", 401);
-        string token = _security.CreateToken(user.Value.UserId);
+        string token = await Task.Run(()=>_security.CreateToken(user.Value.UserId));
         return Result<string?>.Success(token);
     }
     public async Task<Result> UpdateAccount(int userUid, ChangePasswordCredentials dto)
@@ -35,8 +36,8 @@ public class AccountServices : IAccountServices
         Result<User?> user = await _repo.UserAsync(UserUID:userUid);
         if(!user.IsSuccess ||  user.Value is null)
             return Result.Failure("Can't found given credentials", 404);
-        if(!_security.VerifyPassword(dto.password, user.Value.HashedPassword)) throw new InvalidCredentialException("Wrong password.");
-        user.Value.HashedPassword = _security.HashPassword(dto.NewPassword);
+        if(await Task.Run(()=>!_security.VerifyPassword(dto.password, user.Value.HashedPassword))) return Result.Failure("Wrong Password", 401);
+        user.Value.HashedPassword = await Task.Run(()=>_security.HashPassword(dto.NewPassword));
         await _repo.SavechangesAsync();
         return Result.Success();
     }
