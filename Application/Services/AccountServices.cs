@@ -2,7 +2,6 @@ using PracticeWeb.Interfaces;
 using PracticeWeb.DTOs;
 using PracticeWeb.Model;
 using PracticeWeb.Interface;
-using System.Security.Authentication;
 using PracticeWeb.ErrorHandling;
 namespace PracticeWeb.Services;
 public class AccountServices : IAccountServices
@@ -15,7 +14,7 @@ public class AccountServices : IAccountServices
     }
     public async Task<Result> CreateAccount(AccountCredentials dto)
     {
-        if(await _repo.IsUserExisting(dto.Name)) return Result.Failure("Username already Exist.", 205);
+        if(await _repo.IsUserExisting(dto.Name)) return Result.Failure("Username already Exist.", 409);
         string hashedPassword = await Task.Run(()=> _security.HashPassword(dto.Password)); 
         User newUser = new User {Name = dto.Name, HashedPassword = hashedPassword, status = "Active"};
         await _repo.AddAsync(newUser);

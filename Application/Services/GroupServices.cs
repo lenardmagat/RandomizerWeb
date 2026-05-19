@@ -69,8 +69,14 @@ public class GroupServices : IGroupService
     }
     public async Task<Result<GetGroupResponse>> GetGroupData(string? hashId, int? GroupId)
     {
+        Result<int> IsGroupIdIsExisting;
         int _GroupId;
-        if(hashId != null) _GroupId = await Task.Run(() => _Security.DecodeHashids(hashId));
+        if(hashId != null) {
+            IsGroupIdIsExisting = await Task.Run(() => _Security.DecodeHashids(hashId));
+            if(!IsGroupIdIsExisting.IsSuccess) 
+                return Result<GetGroupResponse>.Failure(IsGroupIdIsExisting.Error ?? "Invalid Credentials", IsGroupIdIsExisting.StatusCode);
+            _GroupId = IsGroupIdIsExisting.Value;
+            }
         else if(GroupId.HasValue) _GroupId = GroupId.Value;
         else return Result<GetGroupResponse>.Failure("No given data to process", 404);
         Result<Group> GroupData = await _groupRepository.FindGroupasync(_GroupId);

@@ -1,3 +1,4 @@
+using PracticeWeb.ErrorHandling;
 namespace PracticeWeb.Interface;
 public interface IHasher
 {
@@ -5,5 +6,5 @@ public interface IHasher
     public bool VerifyPassword(string password, string hashPassword);
     public string CreateToken(int UserId);
     public string CreateHashids(int GroupId);
-    public int DecodeHashids(string hashh);
+    public Result<int> DecodeHashids(string hashh);
 }

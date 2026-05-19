@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
 using HashidsNet;
 using System.Security.Authentication;
+using PracticeWeb.ErrorHandling;
 namespace PracticeWeb.core
 {
     public class SystemSecurity : IHasher
@@ -52,12 +53,12 @@ namespace PracticeWeb.core
         {
             return _hashids.Encode(GroupId);
         }
-    public int DecodeHashids(string hash)
+    public Result<int> DecodeHashids(string hash)
         {
             int[] DecodedArray = _hashids.Decode(hash);
-            if (DecodedArray.Length == 0) throw new InvalidCredentialException("Invalid Id");
+            if (DecodedArray.Length == 0) Result<int>.Failure("Invalid Id", 404);
             int GroupId = DecodedArray[0];
-            return GroupId;
+            return Result<int>.Success(GroupId);
         }
     }
 }
