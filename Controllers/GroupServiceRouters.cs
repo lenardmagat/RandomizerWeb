@@ -61,7 +61,7 @@ public class GroupController : ControllerBase
                     timestampt = DateTime.UtcNow
                 }
             );
-        return Ok(response.Value);
+        return Ok(response);
     }
     [HttpGet("GroupData")]
     [Authorize]
