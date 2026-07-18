@@ -11,4 +11,4 @@ public class User
     public string status {get;set;} = null!;
     public List<Group> Groups{get; set;} = new();
     public List<Member> Members{get; set;} = new();
-} 
+}

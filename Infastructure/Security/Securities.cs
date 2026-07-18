@@ -7,7 +7,7 @@ using System.IdentityModel.Tokens.Jwt;
 using HashidsNet;
 using System.Security.Authentication;
 using PracticeWeb.ErrorHandling;
-namespace PracticeWeb.core
+namespace PracticeWeb.core  
 {
     public class SystemSecurity : IHasher
     {
